@@ -1,9 +1,11 @@
-# AMBIT-IRISE Certificate Verification
+# AMBIT-IRISE Certificate Portal
 
-Public verification page for certificates issued by AMBIT-IRISE Foundation, AMBIT Belagavi.
+Certificate verification and download portal of AMBIT-IRISE Foundation, AMBIT Belagavi.
 
-- `index.html`: the verification page (opens `?id=CERTIFICATE-ID` from the QR code)
-- `data/records.json`: encrypted certificate records (each record can only be read with its own certificate ID)
+- `index.html`: verify a certificate (`?id=CERTIFICATE-CODE`, opened by the QR code)
+- `download.html`: students download their certificate with their code (`?code=CERTIFICATE-CODE`)
+- `data/records.json`: certificate records, each encrypted with its own certificate code
+- `certs/`: certificate PDFs, each encrypted with its own certificate code
 - `assets/`: logos
 
-Test IDs: `B4B26-DEMO-2026` (valid sample) and `B4B26-RVKD-2026` (revoked sample). Remove them before go-live.
+No personal data is readable in this repository without the corresponding certificate code.
