@@ -131,7 +131,7 @@
   function show(html) { $("#result").innerHTML = html; }
 
   async function fingerprint(id, d) {
-    const canon = [id, d.name, d.usn, d.team, d.college, d.type, d.event, d.date].join("|");
+    const canon = [id, d.name, d.usn, d.team, d.college, d.type, d.event, d.date, d.semester || ""].join("|");
     const h = hex(await sha(canon)).toUpperCase().slice(0, 16);
     return h.match(/.{4}/g).join("-");
   }
@@ -167,6 +167,7 @@
         ["Date(s)", esc(d.date)],
         d.team ? ["Team", esc(d.team)] : null,
         d.usn ? ["USN", `<span class="mono">${esc(d.usn)}</span>`] : null,
+        d.semester ? ["Semester", esc(d.semester)] : null,
         d.college ? ["Institution", esc(d.college)] : null,
         ["Issued by", esc(d.issuer || db.issuer)],
         ["Issued on", esc(d.issued)],
