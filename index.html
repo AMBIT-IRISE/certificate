@@ -160,7 +160,9 @@
       const db = await loadDb();
       const look = hex(await sha("lookup:" + id));
       if ((db.revoked || []).includes(look)) {
-        show(`<div class="status bad"><span class="ic">⛔</span><div>Certificate revoked<small>ID ${esc(id)} was issued but has since been withdrawn by the issuer.</small></div></div>`);
+        const why = (db.revoked_reason || {})[look];
+        show(why ? `<div class="status bad"><span class="ic">⛔</span><div>${esc(why)}<small>No certificate is valid under ID ${esc(id)}.</small></div></div>`
+                 : `<div class="status bad"><span class="ic">⛔</span><div>Certificate revoked<small>ID ${esc(id)} was issued but has since been withdrawn by the issuer.</small></div></div>`);
         return;
       }
       const rec = db.records && db.records[look];

@@ -146,7 +146,8 @@
       const db = await fetch("data/records.json", { cache: "no-store" }).then(r => r.json());
       const look = hex(await sha("lookup:" + id));
       if ((db.revoked || []).includes(look)) {
-        show(`<div class="status bad"><span class="ic">⛔</span><div>This certificate has been withdrawn<small>Please contact the event coordinators.</small></div></div>`); return;
+        const why = (db.revoked_reason || {})[look];
+        show(`<div class="status bad"><span class="ic">⛔</span><div>${esc(why || "This certificate has been withdrawn")}<small>Please contact the event coordinators.</small></div></div>`); return;
       }
       const rec = db.records && db.records[look];
       if (!rec) {
