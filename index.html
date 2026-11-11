@@ -68,6 +68,17 @@
     dd{border-top:0;padding-top:0}
   }
   @media print{body{background:#fff}h1{color:var(--navy);text-shadow:none}.sub,.about,footer,.verify-form{display:none}}
+
+  .tabs{display:flex;gap:8px;justify-content:center;margin:0 0 18px;flex-wrap:wrap}
+  .tabs a{color:#fff;text-decoration:none;font-weight:700;font-size:14px;padding:8px 16px;border-radius:999px;border:1.5px solid rgba(255,255,255,.6)}
+  .tabs a.on{background:#fff;color:var(--navy);border-color:#fff}
+  .dl{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+  .dl a,.dl button{flex:1 1 200px;text-align:center;text-decoration:none;font-size:16px;font-weight:700;padding:13px 18px;border-radius:12px;border:0;cursor:pointer}
+  .dl .primary{background:var(--mag);color:#fff}
+  .dl .ghost{background:#fff;color:var(--navy);border:2px solid var(--line)}
+  .preview{margin-top:16px;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#f6f5fa}
+  .preview iframe{display:block;width:100%;aspect-ratio:297/210;border:0}
+  @media (max-width:640px){.preview{display:none}}
 </style>
 </head>
 <body>
@@ -92,6 +103,7 @@
 <main>
   <h1>Certificate Verification</h1>
   <p class="sub">AMBIT-IRISE FOUNDATION · OFFICIAL RECORDS</p>
+  <nav class="tabs" aria-label="Portal sections"><a href="download.html">Get your certificate</a><a href="./" class="on">Verify a certificate</a></nav>
 
   <div class="card">
     <form class="verify-form" id="f" autocomplete="off">

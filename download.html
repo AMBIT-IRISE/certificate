@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Certificate Portal | AMBIT-IRISE Foundation</title>
+<meta name="description" content="Download your certificate issued by AMBIT-IRISE Foundation, AMBIT Belagavi, using your certificate code.">
+<meta name="robots" content="noindex">
+<link rel="icon" href="assets/irise.png">
+<style>
+  :root{
+    --navy:#1B1446; --mag:#D6246E; --orange:#FF7A1A; --gold:#FFC93C; --teal:#16C2C9;
+    --ok:#12805C; --okbg:#E7F7F0; --bad:#B3261E; --badbg:#FDECEA; --warn:#8A5A00; --warnbg:#FFF4D6;
+    --text:#1d1b2b; --muted:#5d5a70; --card:#ffffff; --line:#e7e4f0;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  html{min-height:100%;background:#96146e linear-gradient(160deg,#28105a 0%,#96146e 55%,#ff5f28 100%) no-repeat;background-size:100% 100%}
+  body{font-family:"Segoe UI",Roboto,Arial,sans-serif;color:var(--text);min-height:100vh;background:transparent}
+  header{background:#fff;padding:14px 16px;box-shadow:0 2px 10px rgba(0,0,0,.15)}
+  .hdr{max-width:980px;margin:0 auto;display:flex;align-items:center;gap:14px;justify-content:space-between}
+  .hdr .left{display:flex;align-items:center;gap:12px;min-width:0}
+  .hdr img{height:62px;width:auto}
+  .inst{min-width:0}
+  .inst small{display:block;color:#B3261E;font-weight:700;letter-spacing:.12em;font-size:11px}
+  .inst b{display:block;color:#B3261E;font-family:"Times New Roman",serif;font-size:19px;line-height:1.15}
+  .inst span{display:block;color:var(--muted);font-size:12px;margin-top:2px}
+  .partners{display:flex;align-items:center;gap:10px}
+  .partners img{height:52px}
+  main{max-width:760px;margin:0 auto;padding:34px 16px 48px}
+  h1{color:#fff;text-align:center;font-size:clamp(28px,6vw,44px);margin:0 0 6px;letter-spacing:.02em;text-shadow:3px 3px 0 var(--mag)}
+  .sub{color:var(--gold);text-align:center;font-weight:700;letter-spacing:.14em;font-size:13px;margin:0 0 26px}
+  .card{background:var(--card);border-radius:18px;padding:22px;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+  label{font-weight:700;color:var(--navy);display:block;margin-bottom:8px}
+  .row{display:flex;gap:10px;flex-wrap:wrap}
+  input{flex:1 1 240px;font-size:18px;padding:13px 14px;border:2px solid var(--line);border-radius:12px;
+        font-family:Consolas,"Courier New",monospace;letter-spacing:.06em;text-transform:uppercase;color:var(--navy);min-width:0}
+  input:focus{outline:none;border-color:var(--mag)}
+  button{flex:0 0 auto;font-size:16px;font-weight:700;padding:13px 22px;border:0;border-radius:12px;background:var(--mag);color:#fff;cursor:pointer}
+  button:hover{filter:brightness(1.08)}
+  .hint{color:var(--muted);font-size:13px;margin:10px 0 0}
+  #result{margin-top:18px}
+  .status{display:flex;align-items:center;gap:12px;border-radius:14px;padding:14px 16px;font-weight:700;font-size:18px}
+  .status .ic{font-size:26px;line-height:1}
+  .status.ok{background:var(--okbg);color:var(--ok)}
+  .status.bad{background:var(--badbg);color:var(--bad)}
+  .status.warn{background:var(--warnbg);color:var(--warn)}
+  .status small{display:block;font-weight:500;font-size:13px;margin-top:2px}
+  .details{margin-top:16px;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+  .details .type{background:var(--navy);color:var(--gold);padding:12px 16px;font-weight:700;letter-spacing:.1em;font-size:13px}
+  .details .name{padding:16px 16px 4px;font-family:"Times New Roman",serif;font-size:28px;color:var(--navy);font-weight:700;overflow-wrap:anywhere}
+  dl{display:grid;grid-template-columns:150px 1fr;gap:0;margin:8px 0 0}
+  dt,dd{margin:0;padding:10px 16px;border-top:1px solid var(--line);font-size:15px}
+  dt{color:var(--muted);font-weight:600;background:#faf9fd}
+  dd{overflow-wrap:anywhere}
+  .mono{font-family:Consolas,"Courier New",monospace;letter-spacing:.04em}
+  .spin{display:inline-block;width:18px;height:18px;border:3px solid #ddd;border-top-color:var(--mag);border-radius:50%;animation:s 1s linear infinite;vertical-align:middle;margin-right:8px}
+  @keyframes s{to{transform:rotate(360deg)}}
+  .about{color:#fff;opacity:.92;font-size:13.5px;line-height:1.55;margin-top:22px;text-align:center}
+  footer{color:#fff;opacity:.85;text-align:center;font-size:12.5px;padding:0 16px 26px}
+  footer a{color:var(--gold)}
+  @media (max-width:640px){
+    .partners{display:none}
+    .hdr img{height:50px}
+    .inst b{font-size:15px}
+    dl{grid-template-columns:1fr}
+    dt{border-top:1px solid var(--line);padding-bottom:2px;background:none;font-size:12.5px}
+    dd{border-top:0;padding-top:0}
+  }
+  @media print{body{background:#fff}h1{color:var(--navy);text-shadow:none}.sub,.about,footer,.verify-form{display:none}}
+
+  .tabs{display:flex;gap:8px;justify-content:center;margin:0 0 18px;flex-wrap:wrap}
+  .tabs a{color:#fff;text-decoration:none;font-weight:700;font-size:14px;padding:8px 16px;border-radius:999px;border:1.5px solid rgba(255,255,255,.6)}
+  .tabs a.on{background:#fff;color:var(--navy);border-color:#fff}
+  .dl{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+  .dl a,.dl button{flex:1 1 160px;text-align:center;text-decoration:none;font-size:16px;font-weight:700;padding:13px 18px;border-radius:12px;border:0;cursor:pointer}
+  .dl .primary{background:var(--mag);color:#fff}
+  .dl .ghost{background:#fff;color:var(--navy);border:2px solid var(--line)}
+  .preview{margin-top:16px;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#f6f5fa}
+  .preview iframe{display:block;width:100%;aspect-ratio:297/210;border:0}
+  @media (max-width:640px){.preview{display:none}}
+</style>
+</head>
+<body>
+<header>
+  <div class="hdr">
+    <div class="left">
+      <img src="assets/ambit.png" alt="AMBIT logo">
+      <div class="inst">
+        <small>BHARATESH EDUCATION TRUST'S</small>
+        <b>Anuvartik Mirji Bharatesh Institute of Technology</b>
+        <span>Belagavi · Affiliated to VTU-Belagavi</span>
+      </div>
+    </div>
+    <div class="partners">
+      <img src="assets/iic.png" alt="Institution's Innovation Council logo">
+      <img src="assets/irise.png" alt="AMBIT-IRISE Foundation logo">
+      <img src="assets/vtu.png" alt="VTU logo">
+    </div>
+  </div>
+</header>
+
+<main>
+  <h1>Certificate Portal</h1>
+  <p class="sub">DOWNLOAD YOUR CERTIFICATE</p>
+  <nav class="tabs" aria-label="Portal sections"><a href="download.html" class="on">Get your certificate</a><a href="./">Verify a certificate</a></nav>
+  <div class="card">
+    <form class="verify-form" id="f" autocomplete="off">
+      <label for="cid">Enter your Certificate Code</label>
+      <div class="row">
+        <input id="cid" name="code" placeholder="e.g. B4B26-XXXX-XXXX" spellcheck="false" aria-describedby="h">
+        <button type="submit">Get Certificate</button>
+      </div>
+      <p class="hint" id="h">Your code was sent to you by email / WhatsApp by the event coordinators. It is not case-sensitive and dashes are optional.</p>
+    </form>
+    <div id="result" aria-live="polite"></div>
+  </div>
+
+  <p class="about">Your certificate is stored encrypted and can only be opened with your own code. Keep the code private; anyone with it can download and verify your certificate. Lost your code? Write to <a href="mailto:mayurj@ambit.edu.in" style="color:var(--gold)">mayurj@ambit.edu.in</a> from your registered email.</p>
+</main>
+
+<footer>
+  AMBIT-IRISE Foundation · Institution's Innovation Council (IC202430790) · <a href="https://www.ambit.edu.in" rel="noopener">www.ambit.edu.in</a>
+</footer>
+
+<script>
+(() => {
+  const $ = (s) => document.querySelector(s);
+  const enc = new TextEncoder();
+  const norm = (s) => (s || "").toUpperCase().replace(/[^A-Z0-9]/g, "").replace(/^(.{5})(.{4})(.{4})$/, "$1-$2-$3");
+  const hex = (buf) => [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, "0")).join("");
+  const b64 = (s) => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+  const sha = (s) => crypto.subtle.digest("SHA-256", enc.encode(s));
+  const esc = (s) => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const show = (h) => { $("#result").innerHTML = h; };
+  let url = null;
+
+  async function getCert(raw) {
+    const id = norm(raw);
+    if (!/^[A-Z0-9]{5}-[A-Z0-9]{4}-[A-Z0-9]{4}$/.test(id)) {
+      show(`<div class="status warn"><span class="ic">⚠️</span><div>Please check your code<small>Certificate codes look like B4B26-XXXX-XXXX.</small></div></div>`); return;
+    }
+    $("#cid").value = id;
+    show(`<p><span class="spin"></span>Fetching your certificate…</p>`);
+    try {
+      const db = await fetch("data/records.json", { cache: "no-store" }).then(r => r.json());
+      const look = hex(await sha("lookup:" + id));
+      if ((db.revoked || []).includes(look)) {
+        show(`<div class="status bad"><span class="ic">⛔</span><div>This certificate has been withdrawn<small>Please contact the event coordinators.</small></div></div>`); return;
+      }
+      const rec = db.records && db.records[look];
+      if (!rec) {
+        show(`<div class="status bad"><span class="ic">❌</span><div>Code not found<small>Check the code for typing errors (no letter O or I is used). If it still fails, contact the coordinators.</small></div></div>`); return;
+      }
+      const rkey = await crypto.subtle.importKey("raw", await sha("key:" + id), "AES-GCM", false, ["decrypt"]);
+      const d = JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({ name: "AES-GCM", iv: b64(rec.iv) }, rkey, b64(rec.ct))));
+      const file = hex(await sha("file:" + id)).slice(0, 40) + ".bin";
+      const res = await fetch("certs/" + file, { cache: "no-store" });
+      if (!res.ok) {
+        show(`<div class="status warn"><span class="ic">⏳</span><div>Hello ${esc(d.name)} — your certificate is being prepared<small>Your record exists, but the PDF has not been published yet. Please check again later.</small></div></div>`); return;
+      }
+      const buf = new Uint8Array(await res.arrayBuffer());
+      const pkey = await crypto.subtle.importKey("raw", await sha("pdf:" + id), "AES-GCM", false, ["decrypt"]);
+      const pdf = await crypto.subtle.decrypt({ name: "AES-GCM", iv: buf.slice(0, 12) }, pkey, buf.slice(12));
+      if (url) URL.revokeObjectURL(url);
+      url = URL.createObjectURL(new Blob([pdf], { type: "application/pdf" }));
+      const fname = (d.name || "Certificate").replace(/[^A-Za-z0-9]+/g, "_") + "_" + id + ".pdf";
+      show(`
+        <div class="status ok"><span class="ic">🎉</span><div>Congratulations, ${esc(d.name)}!<small>${esc(d.type || "Certificate")} · ${esc(d.event)}</small></div></div>
+        <div class="dl">
+          <a class="primary" href="${url}" download="${esc(fname)}">⬇ Download PDF</a>
+          <a class="ghost" href="${url}" target="_blank" rel="noopener">👁 Open in new tab</a>
+          <a class="ghost" href="./?id=${encodeURIComponent(id)}">✔ Verification page</a>
+        </div>`);
+      history.replaceState(null, "", "?code=" + encodeURIComponent(id));
+    } catch (e) {
+      show(`<div class="status warn"><span class="ic">⚠️</span><div>Could not open the certificate<small>Please reload the page and try again.</small></div></div>`);
+    }
+  }
+  $("#f").addEventListener("submit", (e) => { e.preventDefault(); getCert($("#cid").value); });
+  const q = new URLSearchParams(location.search).get("code");
+  if (q) getCert(q);
+})();
+</script>
+</body>
+</html>
