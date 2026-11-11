@@ -1,5 +1,7 @@
 # AMBIT-IRISE Certificate Portal
 
+Live at https://ambit-irise.github.io/certificate/
+
 Certificate verification and download portal of AMBIT-IRISE Foundation, AMBIT Belagavi.
 
 - `index.html`: verify a certificate (`?id=CERTIFICATE-CODE`, opened by the QR code)
