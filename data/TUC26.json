@@ -1,0 +1,12 @@
+{
+ "issuer": "AMBIT-IRISE Foundation, AMBIT Belagavi",
+ "records": {
+  "7172943b570a4da8a8a45d5f02af9f78f0c99ad19df1c4ece109b3998bf0351f": {
+   "ct": "LvNAaElzSEKA6+Tbn+RjoGEBl/i8dUHphLpYl5FmQUb4Ckc+LoDLtBN1s6EUAtg+utNJMW73XK01gkPnRvvyqT0yfIzM4h3J5+3d7p9tD2brY/QQnu3JjvP52TzYSMD6y5VF2YfxlbBG7u2O94HJV7O3l2viEDEuqrQBx2aeL01B0X3UbRSItsqhak+HrDjKJHaPSMvzG7jBI1mV+6JmzdQhC4TEW5EHmsjKXAnBlWD3Tfy4gZoBDpc7ub9c1335CCKcX1bT4tXckT4cLtdC7m+8D/QqdaDG3OYOqVMvRqjWfPTQNwgC0J4mlP08SFKN4WuqpaPPGT4cHo6F/LNuaUIyPm2mBAw3JG7lawVE0G1aFlmli6EEJ9G62YZtXjbukNjjuihrk/eh1/YdqJVrcILpkBZ7/+hr0vwwFFEq0yC7mC6CR18MsFeeLr9b0qUXMDGR5HDOzOyJmoZJeoZiHt/8Gbm+AiUwiBRF6NXYj8lpc0I35cZvMkdhzNpuCB3OEYuGZNj8e2hbEgQO26qoqwMJkKtNSce/ButTXtwbq5DDZLh8jckVpOZxWg==",
+   "iv": "BAJzIGe3cTJDFpn7"
+  }
+ },
+ "revoked": [],
+ "revoked_reason": {},
+ "version": 1
+}
