@@ -145,7 +145,9 @@
   function show(html) { $("#result").innerHTML = html; }
 
   async function fingerprint(id, d) {
-    const canon = [id, d.name, d.usn, d.team, d.college, d.type, d.event, d.date, d.semester || "", d.roll || ""].join("|");
+    let canon = [id, d.name, d.usn, d.team, d.college, d.type, d.event, d.date, d.semester || "", d.roll || ""].join("|");
+    // event-specific fields (e.g. total time); records without them keep their original fingerprint
+    if (d.extra && d.extra.length) canon += "|" + d.extra.map(([k, v]) => `${k}=${v}`).join("|");
     const h = hex(await sha(canon)).toUpperCase().slice(0, 16);
     return h.match(/.{4}/g).join("-");
   }
@@ -181,6 +183,7 @@
         ["Certificate ID", `<span class="mono">${esc(id)}</span>`],
         ["Event", esc(d.event)],
         ["Date(s)", esc(d.date)],
+        ...(d.extra || []).filter(([, v]) => v).map(([k, v]) => [esc(k), esc(v)]),
         d.team ? ["Team", esc(d.team)] : null,
         d.usn ? ["USN", `<span class="mono">${esc(d.usn)}</span>`] : null,
         !d.usn && d.roll ? ["Division / Roll No.", `<span class="mono">${esc(d.roll)}</span>`] : null,

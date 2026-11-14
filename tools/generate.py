@@ -23,6 +23,7 @@ import hmac
 import io
 import json
 import os
+import re
 import secrets
 import sys
 from base64 import b64encode
@@ -38,7 +39,12 @@ from reportlab.lib.enums import TA_CENTER
 from reportlab.lib.pagesizes import A4, landscape
 from reportlab.lib.styles import ParagraphStyle
 from reportlab.lib.units import mm
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
+from reportlab import rl_config
+
+rl_config.useA85 = 0  # store images as raw binary, not ASCII85 text (25% smaller PDFs)
 from reportlab.platypus import Paragraph
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -66,12 +72,14 @@ def file_of(code): return sha("file:" + code).hex()[:40] + ".bin"
 def fingerprint(code, d):
     canon = "|".join([code, d["name"], d["usn"], d["team"], d["college"], d["type"],
                       d["event"], d["date"], d["semester"], d["roll"]])
+    if d.get("extra"):  # event-specific fields; records without them keep the original fingerprint
+        canon += "|" + "|".join(f"{label}={value}" for label, value in d["extra"])
     h = sha(canon).hex().upper()[:16]
     return "-".join(h[i:i + 4] for i in range(0, 16, 4))
 
 # ---------------------------------------------------------------- inputs
 
-def read_participants(folder: Path):
+def read_participants(folder: Path, extras=()):
     csv_path, xlsx_path = folder / "participants.csv", folder / "participants.xlsx"
     if csv_path.exists():
         with open(csv_path, newline="", encoding="utf-8-sig") as f:
@@ -90,7 +98,25 @@ def read_participants(folder: Path):
         if not r.get("name"):
             print(f"  skipped row {i}: no name")
             continue
-        p = {k: r.get(k, "") for k in FIELDS + ["id", "email"]}
+        keys = [x["key"] for x in extras]
+        p = {k: r.get(k, "") for k in FIELDS + ["id", "email"] + keys}
+        for x in extras:
+            v = p[x["key"]]
+            if x.get("ordinal") and re.fullmatch(r"\d+(\.0)?", v):  # "1" (or 1.0 from Excel) -> "1st"
+                n = int(float(v))
+                v = f"{n}{'th' if 10 <= n % 100 <= 20 else {1: 'st', 2: 'nd', 3: 'rd'}.get(n % 10, 'th')}"
+            p[x["key"]] = v or x.get("default", "")  # e.g. finishers without a podium place
+        missing = [k for k in keys if not p[k]]
+        if missing:
+            print(f"  warning: row {i} ({p['name']}) has no {', '.join(missing)}")
+        for x in extras:  # a field with fixed values: map what the sheet says onto the official wording
+            if x.get("choices") and p[x["key"]]:
+                hits = [ch["label"] for ch in x["choices"]
+                        if all(re.search(m, p[x["key"]], re.I) for m in ch["match"])]
+                if len(hits) != 1:
+                    sys.exit(f"Row {i} ({p['name']}): {x['key']} '{p[x['key']]}' is not one of: "
+                             + "; ".join(ch["label"] for ch in x["choices"]))
+                p[x["key"]] = hits[0]
         p["key"] = (p["id"] or p["usn"] or p["email"] or p["roll"] or p["name"]).upper()
         out.append(p)
     keys = [p["key"] for p in out]
@@ -202,13 +228,61 @@ def basic_template(c, W, H, ev, ctx, code):
     c.drawRightString(W - 18 * mm - q - 3, 20 * mm, "Verify: ambit-irise.github.io/certificate")
     c.setFont("Helvetica", 8); c.drawString(18 * mm, 18 * mm, "Issued on " + ctx["issued"])
 
+def font(spec):
+    """A built-in font name (Helvetica-Bold) or a path to a .ttf file, registered on first use."""
+    if not spec.lower().endswith((".ttf", ".otf")):
+        return spec
+    name = Path(spec).stem
+    if name not in pdfmetrics.getRegisteredFontNames():
+        path = Path(spec) if Path(spec).is_absolute() else ROOT / spec
+        pdfmetrics.registerFont(TTFont(name, str(path)))
+    return name
+
+def image_template(c, W, H, ev, ctx, code):
+    """A finished design as a background image, with each field drawn at a position given in
+    event.json 'template'. Positions are in the pixels of 'space' (top-left origin)."""
+    t = ev["template"]
+    sw, sh = t["space"]
+    k = W / sw
+    X = lambda x: x * k
+    Y = lambda y: H - y * k
+    bg = Path(t["background"])
+    c.drawImage(str(bg if bg.is_absolute() else ROOT / bg), 0, 0, W, H)
+    for f in t["fields"]:
+        text = fill(f["text"], ctx)
+        if not text:
+            continue
+        name, size = font(f.get("font", "Helvetica-Bold")), f["size"] * k
+        if f.get("max_width"):
+            while c.stringWidth(text, name, size) > f["max_width"] * k and size > f["size"] * k * 0.5:
+                size *= 0.97
+        c.setFont(name, size); c.setFillColor(HexColor(f.get("color", "#111111")))
+        draw = {"center": c.drawCentredString, "right": c.drawRightString}.get(f.get("align"), c.drawString)
+        draw(X(f["x"]), Y(f["y"]), text)
+    q = t["qr"]  # x, y = top-left of the QR in template pixels
+    note = "Verify: ambit-irise.github.io/certificate"
+    cx = X(q["x"] + q["size"] / 2)
+    box_w = max(X(q["size"]), c.stringWidth(note, "Helvetica", 7.5 * k)) + 12 * k
+    c.setFillColor(HexColor("#FFFFFF"))
+    c.roundRect(cx - box_w / 2, Y(q["y"] + q["size"] + 30), box_w, (q["size"] + 36) * k, 6 * k, fill=1, stroke=0)
+    draw_qr(c, VERIFY_URL.format(code=code), X(q["x"]), Y(q["y"] + q["size"]), X(q["size"]))
+    c.setFillColor(HexColor("#111111")); c.setFont("Courier-Bold", 12 * k)
+    c.drawCentredString(cx, Y(q["y"] + q["size"] + 14), code)
+    c.setFont("Helvetica", 7.5 * k)
+    c.drawCentredString(cx, Y(q["y"] + q["size"] + 26), note)
+
 def make_pdf(ev, ctx, code) -> bytes:
     buf = io.BytesIO()
-    W, H = landscape(A4)
+    if ev.get("template"):
+        sw, sh = ev["template"]["space"]
+        W = landscape(A4)[0]
+        W, H = W, W * sh / sw
+    else:
+        W, H = landscape(A4)
     c = canvas.Canvas(buf, pagesize=(W, H), invariant=1)  # invariant: same input -> same bytes
     c.setTitle(f"{ctx['type']} - {ctx['name']}")
     c.setAuthor(ctx["issuer"])
-    basic_template(c, W, H, ev, ctx, code)
+    (image_template if ev.get("template") else basic_template)(c, W, H, ev, ctx, code)
     c.showPage(); c.save()
     return buf.getvalue()
 
@@ -219,17 +293,20 @@ def main():
     ap.add_argument("folder", type=Path)
     ap.add_argument("--publish", action="store_true", help="write encrypted certs and records into the portal")
     a = ap.parse_args()
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")  # Windows consoles default to cp1252
 
     folder = a.folder.resolve()
     ev = json.loads((folder / "event.json").read_text(encoding="utf-8"))
-    for k in ["prefix", "event", "type", "date", "issued", "body"]:
+    for k in ["prefix", "event", "type", "date", "issued"] + ([] if ev.get("template") else ["body"]):
         if not ev.get(k):
             sys.exit(f"event.json is missing '{k}'")
+    # event-specific values shown on the certificate and the verification page, e.g. total time
+    extras = ev.get("extra_fields", [])
     prefix = ev["prefix"].upper()
     if len(prefix) != 5 or any(ch not in ALPHABET for ch in prefix):
         sys.exit("prefix must be 5 characters from " + ALPHABET + " (no O, 0, I or 1)")
 
-    people = read_participants(folder)
+    people = read_participants(folder, extras)
     codes_path = folder / "codes.csv"
     codes = load_codes(codes_path)
     taken = {r["code"] for r in codes.values()}
@@ -259,8 +336,10 @@ def main():
             sys.exit("Code collision with an existing certificate; run again.")
         rec = {f: p[f] for f in FIELDS}
         rec.update(type=ev["type"], event=ev["event"], date=ev["date"], issuer=issuer, issued=ev["issued"])
+        if extras:
+            rec["extra"] = [[x["label"], p[x["key"]]] for x in extras]
         rec["fingerprint"] = fingerprint(code, rec)
-        pdf = make_pdf(ev, dict(rec, code=code), code)
+        pdf = make_pdf(ev, dict(rec, code=code, **{x["key"]: p[x["key"]] for x in extras}), code)
         safe = "".join(ch if ch.isalnum() else "_" for ch in p["name"]).strip("_")
         (pdf_dir / f"{safe}_{code}.pdf").write_bytes(pdf)
         out_rows.append({"key": p["key"], "code": code, "name": p["name"], "email": p["email"],
