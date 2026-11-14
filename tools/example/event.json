@@ -1,0 +1,17 @@
+{
+ "prefix": "WS26A",
+ "event": "Sample Workshop 2026",
+ "type": "Certificate of Participation",
+ "date": "20–21 November 2026",
+ "issued": "21 November 2026",
+ "header_small": "BHARATESH EDUCATION TRUST'S",
+ "header": "Anuvartik Mirji Bharatesh Institute of Technology, Belagavi",
+ "header_sub": "AMBIT-IRISE Foundation  ·  Institution's Innovation Council (IC202430790)",
+ "body": "has participated in the <b>{event}</b> organised by AMBIT-IRISE Foundation and the Institution's Innovation Council, AMBIT Belagavi, held on {date}.",
+ "logos": ["assets/ambit.png", "assets/iic.png", "assets/irise.png", "assets/vtu.png"],
+ "accent": "#D6246E",
+ "signatories": [
+  {"name": "Coordinator Name", "title": "Event Coordinator"},
+  {"name": "Principal Name", "title": "Principal, AMBIT"}
+ ]
+}
